@@ -1,0 +1,19 @@
+<paquet
+	prefix="tryphon"
+	categorie="outil"
+	version="1.0.0"
+	etat="test"
+	compatibilite="[3.0.0;3.1.*]"
+	logo="tryphon-32.png"
+	documentation=""
+>
+
+	<nom>Tryphon Player</nom>
+
+	<auteur lien='http://nursit.com'>Cédric</auteur>
+
+	<licence>GNU/GPL</licence>
+
+	<pipeline nom="insert_head" inclure="tryphon_pipelines.php" />
+
+</paquet>
