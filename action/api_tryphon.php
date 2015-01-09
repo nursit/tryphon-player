@@ -19,14 +19,20 @@ function action_api_tryphon_dist(){
 	switch($action){
 		case "token":
 			$url = _request('u');
-			$key = (defined('_TRYPHON_API_KEY')?_TRYPHON_API_KEY:"a valid api key");
-			$ip_address = $GLOBALS['ip'];
-			$seconds = round(time()/300,0);
-      $data = $key . "-" . $ip_address . "-" . $seconds;
-			//var_dump($data);
-			//var_dump($token);
-			$token = hash("sha256",$data);
-			$GLOBALS['redirect'] = parametre_url($url,"token",$token);
+			// si pas de droit, on redirige sans token, ce qui fera un 401 Acces Denied
+			if (function_exists("tryphon_test_acces") AND !tryphon_test_acces($url)){
+				$GLOBALS['redirect'] = $url;
+			}
+			else {
+				$key = (defined('_TRYPHON_API_KEY')?_TRYPHON_API_KEY:"a valid api key");
+				$ip_address = $GLOBALS['ip'];
+				$seconds = round(time()/300,0);
+	      $data = $key . "-" . $ip_address . "-" . $seconds;
+				//var_dump($data);
+				//var_dump($token);
+				$token = hash("sha256",$data);
+				$GLOBALS['redirect'] = parametre_url($url,"token",$token);
+			}
 			break;
 	}
 }
