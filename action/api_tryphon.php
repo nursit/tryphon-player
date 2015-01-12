@@ -19,9 +19,9 @@ function action_api_tryphon_dist(){
 	switch($action){
 		case "token":
 			$url = _request('u');
-			// si pas de droit, on redirige sans token, ce qui fera un 401 Acces Denied
-			if (function_exists("tryphon_test_acces") AND !tryphon_test_acces($url)){
-				$GLOBALS['redirect'] = $url;
+			// si pas de droit, on redirige vers l'url fournie par tryphon_test_acces
+			if (function_exists("tryphon_test_acces") AND $r=tryphon_test_acces($url)){
+				$GLOBALS['redirect'] = $r;
 			}
 			else {
 				$key = (defined('_TRYPHON_API_KEY')?_TRYPHON_API_KEY:"a valid api key");
