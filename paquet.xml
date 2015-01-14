@@ -14,6 +14,6 @@
 
 	<licence>GNU/GPL</licence>
 
-	<pipeline nom="insert_head" inclure="tryphon_pipelines.php" />
+	<pipeline nom="insert_head" />
 
 </paquet>

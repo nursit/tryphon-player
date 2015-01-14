@@ -1,6 +1,6 @@
 <?php
 /**
- * Fichier gérant les pipelines du plugin Tryphon
+ * Fichier gérant les options du plugin Tryphon
  *
  * @plugin     Tryphon
  * @copyright  2014
@@ -9,9 +9,8 @@
  * @package    SPIP\Tryphon\Pipelines
  */
 
-
 /**
- * Inserer le js d'init du player Tryphon
+ * Inserer le js d'init du player Tryphon pour les liens faits a la main
  * @param $flux
  * @return string
  */
@@ -23,4 +22,19 @@ function tryphon_insert_head($flux){
 	$flux .= "<script src=\"$js_init\" type=\"application/javascript\"></script>\n";
 
 	return $flux;
+}
+
+function tryphon_can_play($url){
+	if (function_exists("tryphon_test_acces") AND $r=tryphon_test_acces($url)){
+		return false;
+	}
+	return true;
+}
+
+function tryphon_url_cast($cast){
+	return "http://audiobank.tryphon.eu/casts/$cast";
+}
+
+function tryphon_url_stream(){
+	return "http://beta-stream.tryphon.eu/labas";
 }
