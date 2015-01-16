@@ -9,20 +9,6 @@
  * @package    SPIP\Tryphon\Pipelines
  */
 
-/**
- * Inserer le js d'init du player Tryphon pour les liens faits a la main
- * @param $flux
- * @return string
- */
-function tryphon_insert_head($flux){
-	$js = timestamp(produire_fond_statique("javascript/tryphon-player.js"));
-	$js_init = timestamp(find_in_path("javascript/tryphon-player-init.js"));
-
-	$flux .= "<script type=\"application/javascript\">var tryphon_player_script='$js';</script>\n";
-	$flux .= "<script src=\"$js_init\" type=\"application/javascript\"></script>\n";
-
-	return $flux;
-}
 
 function tryphon_can_play($url){
 	if (function_exists("tryphon_test_acces") AND $r=tryphon_test_acces($url)){
@@ -37,4 +23,27 @@ function tryphon_url_cast($cast){
 
 function tryphon_url_stream(){
 	return "http://beta-stream.tryphon.eu/labas";
+}
+
+/**
+ * Inserer le js d'init du player Tryphon pour les liens faits a la main
+ * @param $flux
+ * @return string
+ */
+function tryphon_affichage_final($flux){
+	if ($GLOBALS['html']
+	  AND strpos($flux,"tryphon.eu")!==false
+		AND strpos($flux,"Tryphon.Player.setup")===false) {
+
+		$js = timestamp(produire_fond_statique("javascript/tryphon-player.js"));
+		lire_fichier(find_in_path("javascript/tryphon-player-init.js"),$js_init);
+		$ins = "\n<script type=\"application/javascript\">var tryphon_player_script='$js';\n$js_init</script>";
+		if ($p = stripos($flux,"</body>")){
+			$flux = substr_replace($flux,$ins,$p,0);
+		}
+		else {
+			$flux .= $ins;
+		}
+	}
+	return $flux;
 }
