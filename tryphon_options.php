@@ -9,6 +9,13 @@
  * @package    SPIP\Tryphon\Pipelines
  */
 
+function tryphon_insert_head_css($flux){
+	if ($f = find_in_path("css/tryphon.css")){
+		$f = timestamp($f);
+		$flux .= "<link href='$f' rel='stylesheet' />\n";
+	}
+	return $flux;
+}
 
 function tryphon_can_play($url){
 	if (function_exists("tryphon_test_acces") AND $r=tryphon_test_acces($url)){

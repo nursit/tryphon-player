@@ -12,7 +12,8 @@ var tryphon_loader;
 			Tryphon.Player.setup({
         "url_rewriter": function(url) {
           return "tryphon.api/token/?u=" + encodeURIComponent(url);
-        }
+        },
+				"ignore_player_css_url": true
       });
 			Tryphon.Player.load();
 		}

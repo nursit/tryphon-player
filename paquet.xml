@@ -15,5 +15,6 @@
 	<licence>GNU/GPL</licence>
 
 	<pipeline nom="affichage_final" />
+	<pipeline nom="insert_head_css" />
 
 </paquet>
