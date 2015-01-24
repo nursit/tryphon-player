@@ -5,7 +5,7 @@
 		[<a class="spip_out tryphon-player[ (#ENV{class})]" href="#GET{url}">(#ENV{titre}|sinon{#GET{url}})</a>]
 	</dt>
 	[<dt class='spip_doc_titre' style="max-width:650px;"><strong>(#ENV{titre})</strong></dt>]<span style="display: none;">
-	[<script>/*<!\[CDATA\[*/var tryphon_player_script = '[(#PRODUIRE{javascript/tryphon-player.js}|timestamp)]';
+	[<script>/*<!\[CDATA\[*/var tryphon_player_script = '[(#PRODUIRE{fond=javascript/tryphon-player.js}|timestamp)]';
 	(#INCLURE{javascript/tryphon-player-init.js}|compacte{js})/*\]\]>*/</script>]</span>
 </dl>
 <?php echo "<"."?php } else { ?".">"; ?>

@@ -5,7 +5,7 @@ var tryphon_loader;
 		jQuery('a.spip_out').filter('[href*="audiobank.tryphon.eu"]').addClass('tryphon-player');
 		if (jQuery("a.tryphon-player").length){
 			if (typeof tryphon_loader == "undefined"){
-				tryphon_loader = jQuery.getScript("http://player.tryphon.eu/v2/player.js",init_players);
+				tryphon_loader = jQuery.getScript(tryphon_player_script,init_players);
 				return;
 			}
 			if (typeof Tryphon == "undefined") return;
