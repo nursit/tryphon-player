@@ -32,6 +32,17 @@ function tryphon_url_stream(){
 	return "http://beta-stream.tryphon.eu/labas";
 }
 
+function tryphon_url_son_lowsec($url,$id_auteur){
+	include_spip("inc/acces");
+	if (intval($id_auteur) AND strpos($url,"/tryphon.api/token/")!==false){
+		$url_son = parametre_url($url,"u");
+		$low_sec = afficher_low_sec($id_auteur,$url_son);
+		$url = str_replace("/tryphon.api/token/","/tryphon.api/lowtoken/$id_auteur/$low_sec/",$url);
+	}
+	return $url;
+}
+
+
 function tryphon_source_ogg($src){
 	if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/.*([.]mp3)?$,Uims",$src,$m)
 	  OR (strpos($src,"/tryphon.api/token/?u=")!==false AND substr($src,-4)==".mp3")){
