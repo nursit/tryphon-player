@@ -32,6 +32,14 @@ function tryphon_url_stream(){
 	return "http://beta-stream.tryphon.eu/labas";
 }
 
+function tryphon_source_ogg($src){
+	if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/.*([.]mp3)?$,Uims",$src,$m)
+	  OR (strpos($src,"/tryphon.api/token/?u=")!==false AND substr($src,-4)==".mp3")){
+		$src = substr($src,0,-4).".ogg";
+		return $src;
+	}
+	return "";
+}
 /**
  * Inserer le js d'init du player Tryphon pour les liens faits a la main
  * @param $flux
