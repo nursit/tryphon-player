@@ -70,7 +70,7 @@ function tryphon_renseigner_document_distant($flux) {
 	http://audiobank.tryphon.org/casts/bjwmsv7a.mp3
 	// on tente de récupérer les données oembed
 	if ($source = $flux['source']
-	  AND preg_match(",https?://audiobank.tryphon.org/casts/(.*)([.](mp3|ogg))?$,Uims",$source,$m)){
+	  AND preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/(.*)([.](mp3|ogg))?$,Uims",$source,$m)){
 		$cast = $m[1];
 		#var_dump($m);
 		$doc = tryphon_renseigner_cast($cast);

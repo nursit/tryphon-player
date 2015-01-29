@@ -42,6 +42,7 @@ Sinon, utiliser le comportement normal.
 </dl>
 
 <?php echo "<"."?php } else { ?".">"; ?>
-<INCLURE{fond=modeles/tryphon_401,url=#GET{url},env} />
+[(#ENV{sinon}|oui)  <INCLURE{fond=modeles/emb,id_document=#ENV{sinon},env,sinon=''} />
+][(#ENV{sinon}|non) <INCLURE{fond=modeles/tryphon_401,url=#GET{url},env} />]
 <?php echo "<"."?php } ?".">"; ?>
 </BOUCLE_doc>
