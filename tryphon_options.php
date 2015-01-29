@@ -54,3 +54,80 @@ function tryphon_affichage_final($flux){
 	}
 	return $flux;
 }
+
+
+/**
+ * insertion des traitements oembed dans l'ajout des documents distants
+ * reconnaitre une URL oembed (car provider declare ou decouverte automatique active)
+ * et la pre-traiter pour recuperer le vrai document a partir de l'url concernee
+ *
+ * @param array $flux
+ * @return array
+ */
+function tryphon_renseigner_document_distant($flux) {
+	#var_dump($flux);
+
+	http://audiobank.tryphon.org/casts/bjwmsv7a.mp3
+	// on tente de récupérer les données oembed
+	if ($source = $flux['source']
+	  AND preg_match(",https?://audiobank.tryphon.org/casts/(.*)([.](mp3|ogg))?$,Uims",$source,$m)){
+		$cast = $m[1];
+		#var_dump($m);
+		$doc = tryphon_renseigner_cast($cast);
+		return $doc;
+	}
+
+	return $flux;
+}
+
+function tryphon_renseigner_cast($cast){
+	$url = "http://audiobank.tryphon.org/casts/$cast";
+	$url_mp3 = "http://audiobank.tryphon.org/casts/$cast.mp3";
+	$url_ogg= "http://audiobank.tryphon.org/casts/$cast.ogg";
+
+	$infos = array(
+		'ferme' => 0,
+		'distant' => 'oui',
+		'media' => 'audio',
+		'mode' => 'document',
+	);
+	include_spip("inc/distant");
+	include_spip("inc/filtres");
+	if (!$res = recuperer_page($url_mp3,false,true)){
+		$infos['ferme'] = 1;
+		$url_mp3 = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_mp3));
+		$url_ogg = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_ogg));
+	}
+	$infos['fichier'] = $url_mp3;
+	$infos['extension'] = 'mp3';
+
+	// recuperer les infos
+	if ($embed = recuperer_page($url)){
+		#var_dump($embed);
+		preg_match_all(",<span\s*class=\"tp-(author|title)\">(.*)</span>,Uims",$embed,$matches,PREG_SET_ORDER);
+		foreach($matches as $match){
+			$texte = tryphon_importe_texte($match[2]);
+			if ($match[1]=='author')
+				$infos['credits'] = $texte;
+			elseif ($match[1]=='title')
+				$infos['titre'] = $texte;
+		}
+	}
+
+	return $infos;
+}
+
+function tryphon_importe_texte($texte){
+	$texte = trim(unicode2charset(html2unicode($texte)));
+	// &#x;
+	$vu = array();
+	if (preg_match_all(',&#x0*([0-9a-f]+);,iS', $texte, $regs, PREG_SET_ORDER))
+		foreach ($regs as $reg){
+			if (!isset($vu[$reg[0]]))
+				$vu[$reg[0]] = caractere_utf_8(hexdec($reg[1]));
+		}
+	return str_replace(array_keys($vu), array_values($vu), $texte);
+}
+
+#var_dump(tryphon_renseigner_document_distant(array('source'=>'http://audiobank.tryphon.org/casts/bjwmsv7a.mp3')));
+#die();
