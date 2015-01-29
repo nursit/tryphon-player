@@ -86,7 +86,7 @@ function tryphon_renseigner_cast($cast){
 	$url_ogg= "http://audiobank.tryphon.org/casts/$cast.ogg";
 
 	$infos = array(
-		'ferme' => 0,
+		'restreint' => 0,
 		'distant' => 'oui',
 		'media' => 'audio',
 		'mode' => 'document',
@@ -94,7 +94,7 @@ function tryphon_renseigner_cast($cast){
 	include_spip("inc/distant");
 	include_spip("inc/filtres");
 	if (!$res = recuperer_page($url_mp3,false,true)){
-		$infos['ferme'] = 1;
+		$infos['restreint'] = 1;
 		$url_mp3 = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_mp3));
 		$url_ogg = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_ogg));
 	}
