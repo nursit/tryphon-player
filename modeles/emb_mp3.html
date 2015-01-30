@@ -22,7 +22,7 @@ Sinon, utiliser le comportement normal.
 [(#GET{player}|=={pixplayer}|oui)#SET{my_width,#ENV{largeur,#ENV{width,290}}}]
 [(#GET{player}|=={neoplayer}|oui)#SET{my_width,#ENV{largeur,#ENV{width,200}}}]
 [(#GET{player}|=={dewplayer}|oui)#SET{my_width,#ENV{largeur,#ENV{width,200}}}]
-[(#GET{player}|=={mejs}|oui)#SET{my_width,#ENV{largeur,#ENV{width,400}}}]
+[(#GET{player}|=={mejs}|oui)#SET{my_width,#ENV{largeur,#ENV{width,450}}}]
 #SET{my_width,#LOGO_DOCUMENT|largeur|min{350}|max{120,#GET{my_width}}}
 #SET{logo,#LOGO_DOCUMENT|image_reduire{#GET{my_width},*}}
 
@@ -39,6 +39,7 @@ Sinon, utiliser le comportement normal.
 [
 <dt class='spip_doc_titre #EDIT{titre}'[ style='width:(#GET{my_width})px;']><strong>(#TITRE)</strong></dt>][
 <dd class='spip_doc_descriptif #EDIT{descriptif}'[ style='margin-bottom:0;width:(#GET{my_width})px;']>(#DESCRIPTIF|PtoBR)[(#NOTES|PtoBR)]</dd>]
+<dd class='spip_doc_descriptif'[ style='margin-bottom:0;width:(#GET{my_width})px;']><a href="#URL_DOCUMENT">Télécharger le MP3</a></dd>
 </dl>
 
 <?php echo "<"."?php } else { ?".">"; ?>
