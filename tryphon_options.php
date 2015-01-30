@@ -40,7 +40,7 @@ function tryphon_affiche_duree($duree){
 }
 
 function tryphon_url_cast($cast,$restreint=false){
-	$url = "http://audiobank.tryphon.eu/casts/$cast";
+	$url = "http://audiobank.tryphon.org/casts/$cast";
 	if ($restreint){
 		include_spip('inc/filtres');
 		$url = tryphon_url_tokenize($url);
@@ -49,7 +49,7 @@ function tryphon_url_cast($cast,$restreint=false){
 }
 
 function tryphon_url_stream(){
-	return "http://beta-stream.tryphon.eu/labas";
+	return "http://beta-stream.tryphon.org/labas";
 }
 
 
@@ -171,6 +171,54 @@ function tryphon_pre_edition($flux){
 			$flux['data'] = array_merge($flux['data'],$infos);
 		}
 	}
+
+	return $flux;
+}
+
+function tryphon_post_edition($flux){
+	if ($flux['args']['table']=="spip_articles"
+	  AND $id_article=intval($flux['args']['id_objet'])){
+		$champs = array('descriptif','chapo','texte','ps','visuel');
+		$set = array();
+		foreach($champs as $champ){
+			if (isset($flux['data'][$champ])){
+				preg_match_all(",https?://audiobank.tryphon.(?:org|eu)/casts/\w*([.]mp3)\b,ims",$flux['data'][$champ],$matches,PREG_SET_ORDER);
+				if ($matches){
+					foreach($matches as $match){
+						$url = $match[0];
+						if ($cast = tryphon_is_url_cast($url)){
+							$url = tryphon_url_cast($cast).".mp3";
+							$url_tok = tryphon_url_tokenize($url);
+							if (!$id_document = sql_getfetsel("id_document","spip_documents","distant='oui' AND (fichier=".sql_quote($url)." OR fichier=".sql_quote($url_tok).")")){
+								$ajouter_documents = charger_fonction("ajouter_documents","action");
+								// TODO insertion document en base ici
+								$file = array(
+									'distant' => true,
+									'tmp_name' => $url,
+									'name' => basename($url),
+								);
+								// eviter de declencher les conflits
+								$save = $_POST;$_POST = array();
+								$ids = $ajouter_documents(0,array($file),"article",$id_article,"document");
+								$_POST = $save;
+								$id_document = reset($ids);
+							}
+							if ($id_document){
+								if (!isset($set[$champ]))
+									$set[$champ] = $flux['data'][$champ];
+								$set[$champ] = str_replace($match[0],"<emb$id_document>",$set[$champ]);
+							}
+						}
+					}
+				}
+			}
+		}
+		if (count($set)){
+			$save = $_POST;$_POST = array();
+			article_modifier($id_article,$set);
+			$_POST = $save;
+		}
+	}
 	return $flux;
 }
 
@@ -202,11 +250,15 @@ function tryphon_renseigner_document_distant($flux) {
  * @return array
  */
 function tryphon_renseigner_cast($cast){
-	$url = "http://audiobank.tryphon.org/casts/$cast";
+	static $infos = array();
+	if (isset($infos[$cast])){
+		return $infos[$cast];
+	}
+	$url = tryphon_url_cast($cast);
 	$url_mp3 = "http://audiobank.tryphon.org/casts/$cast.mp3";
 	$url_ogg= "http://audiobank.tryphon.org/casts/$cast.ogg";
 
-	$infos = array(
+	$infos[$cast] = array(
 		'restreint' => 0,
 		'distant' => 'oui',
 		'media' => 'audio',
@@ -215,30 +267,30 @@ function tryphon_renseigner_cast($cast){
 	include_spip("inc/distant");
 	include_spip("inc/filtres");
 	if (!$res = recuperer_page($url_mp3,false,true,0)){
-		$infos['restreint'] = 1;
+		$infos[$cast]['restreint'] = 1;
 		$url_mp3 = tryphon_url_tokenize($url_mp3);
 		$url_ogg = tryphon_url_tokenize($url_ogg);
 		$url_lowsec = tryphon_url_son_lowsec($url_mp3,250);
 		$res = recuperer_page($url_lowsec,false,true,0);
 	}
 	if ($res AND preg_match(",Content-Length:\s*(\d+)$,Uims",$res,$m))
-		$infos['taille'] = $m[1];
-	$infos['fichier'] = $url_mp3;
-	$infos['extension'] = 'mp3';
+		$infos[$cast]['taille'] = $m[1];
+	$infos[$cast]['fichier'] = $url_mp3;
+	$infos[$cast]['extension'] = 'mp3';
 
 	// recuperer les infos
 	if ($json = recuperer_page("$url.json")
 	  AND $json = json_decode($json,true)){
 		#var_dump($json);
 		if (isset($json['title']))
-			$infos['titre'] = $json['title'];
+			$infos[$cast]['titre'] = $json['title'];
 		if (isset($json['author']))
-			$infos['credits'] = $json['author'];
+			$infos[$cast]['credits'] = $json['author'];
 		if (isset($json['duration']))
-			$infos['duree'] = $json['duration'];
+			$infos[$cast]['duree'] = $json['duration'];
 	}
 
-	return $infos;
+	return $infos[$cast];
 }
 
 function tryphon_afficher_complement_objet($flux){

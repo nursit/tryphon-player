@@ -17,6 +17,7 @@
 
 	<pipeline nom="declarer_tables_objets_sql" inclure="tryphon_administrations.php" />
 	<pipeline nom="pre_edition" />
+	<pipeline nom="post_edition" />
 	<pipeline nom="affichage_final" />
 	<pipeline nom="insert_head_css" />
 	<pipeline nom="renseigner_document_distant" />
