@@ -19,7 +19,10 @@ function action_api_tryphon_dist(){
 	if (!$url = _request('u')){
 		$url = array_pop($arg);
 		$url = urldecode($url);
+		if (strpos($url,"/")===false)
+			$url = base64_decode($url);
 	}
+
 	switch($action){
 		case "lowtoken":
 			if (count($arg)>2){
