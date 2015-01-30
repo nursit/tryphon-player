@@ -43,6 +43,11 @@ function tryphon_url_son_lowsec($url,$id_auteur){
 }
 
 
+/**
+ * Trouver la source ogg correspondante au mp3
+ * @param $src
+ * @return string
+ */
 function tryphon_source_ogg($src){
 	if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/.*([.]mp3)?$,Uims",$src,$m)
 	  OR (strpos($src,"/tryphon.api/token/?u=")!==false AND substr($src,-4)==".mp3")){
@@ -51,6 +56,8 @@ function tryphon_source_ogg($src){
 	}
 	return "";
 }
+
+
 /**
  * Inserer le js d'init du player Tryphon pour les liens faits a la main
  * @param $flux
@@ -76,9 +83,51 @@ function tryphon_affichage_final($flux){
 
 
 /**
- * insertion des traitements oembed dans l'ajout des documents distants
- * reconnaitre une URL oembed (car provider declare ou decouverte automatique active)
- * et la pre-traiter pour recuperer le vrai document a partir de l'url concernee
+ * Detecter une URL cast tryphon, qui peut etre directe ou via tryphon.api/token/
+ * et extraire le numero de cast
+ * @param string $url
+ * @return string
+ */
+function tryphon_is_url_cast($url){
+	$cast = "";
+	if ($url){
+		if (strpos($url,"/tryphon.api/token/?u=")!==false){
+			$url = parametre_url($url,"u");
+		}
+		if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/(.*)([.](mp3|ogg))?$,Uims",$url,$m)){
+			$cast = $m[1];
+		}
+	}
+	return $cast;
+}
+
+/**
+ * Mettre a jour un document cast Tryphon lors de l'enregistrement
+ * @param array $flux
+ * @return array mixed
+ */
+function tryphon_pre_edition($flux){
+	if ($flux['args']['table']=="spip_documents"
+	  AND $id_document=intval($flux['args']['id_objet'])
+	  AND $flux['args']['action']=='modifier'){
+		if (isset($flux['fichier']))
+			$source = $flux['fichier'];
+		else {
+			$source = sql_getfetsel("fichier","spip_documents","id_document=".intval($id_document)." AND distant='oui'");
+		}
+		if ($source
+		  AND $cast = tryphon_is_url_cast($source)){
+			$infos = tryphon_renseigner_cast($cast);
+			$flux['data'] = array_merge($flux['data'],$infos);
+		}
+	}
+	return $flux;
+}
+
+/**
+ * insertion des traitements sur documents tryphon dans l'ajout des documents distants
+ * reconnaitre une URL tryphon
+ * et la pre-traiter pour recuperer les meta-infos du son (pretection, duree, titre, auteur)
  *
  * @param array $flux
  * @return array
@@ -89,9 +138,7 @@ function tryphon_renseigner_document_distant($flux) {
 	http://audiobank.tryphon.org/casts/bjwmsv7a.mp3
 	// on tente de récupérer les données oembed
 	if ($source = $flux['source']
-	  AND preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/(.*)([.](mp3|ogg))?$,Uims",$source,$m)){
-		$cast = $m[1];
-		#var_dump($m);
+		AND $cast = tryphon_is_url_cast($source)){
 		$doc = tryphon_renseigner_cast($cast);
 		return $doc;
 	}
@@ -99,6 +146,11 @@ function tryphon_renseigner_document_distant($flux) {
 	return $flux;
 }
 
+/**
+ * Aller chercher les infos d'un CAST
+ * @param $cast
+ * @return array
+ */
 function tryphon_renseigner_cast($cast){
 	$url = "http://audiobank.tryphon.org/casts/$cast";
 	$url_mp3 = "http://audiobank.tryphon.org/casts/$cast.mp3";
@@ -121,32 +173,17 @@ function tryphon_renseigner_cast($cast){
 	$infos['extension'] = 'mp3';
 
 	// recuperer les infos
-	if ($embed = recuperer_page($url)){
-		#var_dump($embed);
-		preg_match_all(",<span\s*class=\"tp-(author|title)\">(.*)</span>,Uims",$embed,$matches,PREG_SET_ORDER);
-		foreach($matches as $match){
-			$texte = tryphon_importe_texte($match[2]);
-			if ($match[1]=='author')
-				$infos['credits'] = $texte;
-			elseif ($match[1]=='title')
-				$infos['titre'] = $texte;
-		}
+	if ($json = recuperer_page("$url.json")
+	  AND $json = json_decode($json,true)){
+		#var_dump($json);
+		if (isset($json['title']))
+			$infos['titre'] = $json['title'];
+		if (isset($json['author']))
+			$infos['credits'] = $json['author'];
+		if (isset($json['duration']))
+			$infos['duree'] = $json['duration'];
 	}
 
 	return $infos;
 }
 
-function tryphon_importe_texte($texte){
-	$texte = trim(unicode2charset(html2unicode($texte)));
-	// &#x;
-	$vu = array();
-	if (preg_match_all(',&#x0*([0-9a-f]+);,iS', $texte, $regs, PREG_SET_ORDER))
-		foreach ($regs as $reg){
-			if (!isset($vu[$reg[0]]))
-				$vu[$reg[0]] = caractere_utf_8(hexdec($reg[1]));
-		}
-	return str_replace(array_keys($vu), array_values($vu), $texte);
-}
-
-#var_dump(tryphon_renseigner_document_distant(array('source'=>'http://audiobank.tryphon.org/casts/bjwmsv7a.mp3')));
-#die();

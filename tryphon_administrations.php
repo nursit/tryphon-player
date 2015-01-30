@@ -19,7 +19,9 @@
 function tryphon_declarer_tables_objets_sql($tables){
 
 	$tables['spip_documents']['field']['restreint'] = "tinyint DEFAULT 0 NOT NULL";
+	$tables['spip_documents']['field']['duree'] = "varchar(6) DEFAULT '' NOT NULL";
 	$tables['spip_documents']['champs_editables'][] = 'restreint';
+	$tables['spip_documents']['champs_editables'][] = 'duree';
 
 	return $tables;
 }
@@ -40,7 +42,7 @@ function tryphon_upgrade($nom_meta_base_version, $version_cible) {
 	$maj['create'] = array(
 		array('maj_tables', array('spip_documents')),
 	);
-	$maj['0.4.0'] = array(
+	$maj['0.4.1'] = array(
 		array('maj_tables', array('spip_documents')),
 	);
 
