@@ -43,6 +43,7 @@ function tryphon_url_son_lowsec($url,$id_auteur){
 		$url_son = parametre_url($url,"u");
 		$low_sec = afficher_low_sec($id_auteur,$url_son);
 		$url = str_replace("/tryphon.api/token/","/tryphon.api/lowtoken/$id_auteur/$low_sec/",$url);
+		$url = str_replace("/la-bas.org/","/dev_la-bas.nursit.com/",$url);
 	}
 	return $url;
 }
@@ -169,11 +170,15 @@ function tryphon_renseigner_cast($cast){
 	);
 	include_spip("inc/distant");
 	include_spip("inc/filtres");
-	if (!$res = recuperer_page($url_mp3,false,true)){
+	if (!$res = recuperer_page($url_mp3,false,true,0)){
 		$infos['restreint'] = 1;
-		$url_mp3 = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_mp3));
+		$url_mp3 = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_mp3),"http://dev_la-bas.nursit.com/");
 		$url_ogg = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_ogg));
+		$url_lowsec = tryphon_url_son_lowsec($url_mp3,250);
+		$res = recuperer_page($url_lowsec,false,true,0);
 	}
+	if ($res AND preg_match(",Content-Length:\s*(\d+)$,Uims",$res,$m))
+		$infos['taille'] = $m[1];
 	$infos['fichier'] = $url_mp3;
 	$infos['extension'] = 'mp3';
 

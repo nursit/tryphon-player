@@ -5,7 +5,7 @@
 		<h3>Documents Databank</h3>
 		<ul class="liste-items">
 			<BOUCLE_databank(DOCUMENTS){id_objet}{objet}{!par date}>[
-			<li class="item">[(#RESTREINT|oui)[(#CHEMIN_IMAGE{restreint-16.png}|balise_img{Restreint})] ]#TITRE - <a href="[(#URL_DOCUMENT|tryphon_is_url_cast|tryphon_url_cast{#RESTREINT})]">(#URL_DOCUMENT|tryphon_is_url_cast)</a>  [-(#DUREE|oui)[(#VAL{H:i:s}|date{#DUREE})]]</li>
+			<li class="item">[(#RESTREINT|oui)[(#CHEMIN_IMAGE{restreint-16.png}|balise_img{Restreint})] ]#TITRE - <a href="[(#URL_DOCUMENT|tryphon_is_url_cast|tryphon_url_cast{#RESTREINT})]">(#URL_DOCUMENT|tryphon_is_url_cast)</a>[ -(#DUREE|oui)[(#VAL{H:i:s}|date{#DUREE})]][ - (#TAILLE|taille_en_octets)]</li>
 			]</BOUCLE_databank>
 		</ul>
 	</div>
