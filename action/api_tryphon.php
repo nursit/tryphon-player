@@ -19,8 +19,15 @@ function action_api_tryphon_dist(){
 	if (!$url = _request('u')){
 		$url = array_pop($arg);
 		$url = urldecode($url);
-		if (strpos($url,"/")===false)
+		if (strpos($url,"/")===false AND strpos($url,"=.")!==false){
+			$url = explode(".",$url);
+			$url = reset($url);
 			$url = base64_decode($url);
+		}
+		elseif(strpos($url,"//")==false){
+			$url = array_pop($arg);
+			$url = base64_decode($url);
+		}
 	}
 
 	switch($action){
