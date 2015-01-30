@@ -67,7 +67,8 @@ function tryphon_url_detokenize($url){
 		$url = array_pop($parts);
 		$url = urldecode($url);
 		if (strpos($url,"//")===false){
-			$url = array_pop($parts);
+			if (substr($url,-1)!=="=")
+				$url = array_pop($parts);
 			$url = base64_decode($url);
 		}
 	}
