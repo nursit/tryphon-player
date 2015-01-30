@@ -55,7 +55,9 @@ function tryphon_url_stream(){
 function tryphon_url_son_lowsec($url,$id_auteur){
 	include_spip("inc/acces");
 	if (intval($id_auteur) AND strpos($url,"/tryphon.api/token/")!==false){
-		$url_son = parametre_url($url,"u");
+		$url_son = explode("/",$url);
+		$url_son = end($url_son);
+		$url_son = urldecode($url_son);
 		$low_sec = afficher_low_sec($id_auteur,$url_son);
 		$url = str_replace("/tryphon.api/token/","/tryphon.api/lowtoken/$id_auteur/$low_sec/",$url);
 		$url = str_replace("/la-bas.org/","/dev_la-bas.nursit.com/",$url);
@@ -119,6 +121,8 @@ function tryphon_is_url_cast($url){
 			$url = explode("/",$url);
 			$url = end($url);
 			$url = urldecode($url);
+			#if (strncmp($url,"http",4)!=0)
+			#	$url = "http://$url";
 		}
 		if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/(.*)([.](mp3|ogg))?$,Uims",$url,$m)){
 			$cast = $m[1];
