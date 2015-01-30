@@ -8,7 +8,7 @@
 		       data-mejsoptions='{"alwaysShowControls": true[,"loop":(#ENV{loop}|?{true,false})],"audioWidth":"100%"[,"audioHeight":"(#ENV{hauteur})"][,"startVolume":"(#ENV{volume})"][,"duration":"(#GET{duree})"][,"playlistSelector":"(#ENV{playlist})"]<B_feat>,"features":[<BOUCLE_feat(POUR){tableau #ENV{features}}{','}>"#VALEUR"</BOUCLE_feat>]</B_feat>}'
 		       [data-mejsplugins='(#ENV{plugins}|json_encode)']
 		       controls="controls"
-	         preload="none"
+	         [(#GET{duree}|oui)preload="none"]
 					 [autoplay="autoplay"(#ENV{autoplay}|oui)]>
 				[<source type="audio/ogg" src="(#GET{url}|tryphon_source_ogg)" />]
 				<source type="#MIME_TYPE" src="#GET{url}" />
