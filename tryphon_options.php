@@ -43,7 +43,7 @@ function tryphon_url_cast($cast,$restreint=false){
 	$url = "http://audiobank.tryphon.eu/casts/$cast";
 	if ($restreint){
 		include_spip('inc/filtres');
-		$url = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url));
+		$url = url_absolue(_DIR_RACINE."tryphon.api/token/".urlencode($url));
 	}
 	return $url;
 }
@@ -71,7 +71,7 @@ function tryphon_url_son_lowsec($url,$id_auteur){
  */
 function tryphon_source_ogg($src){
 	if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/.*([.]mp3)?$,Uims",$src,$m)
-	  OR (strpos($src,"/tryphon.api/token/?u=")!==false AND substr($src,-4)==".mp3")){
+	  OR (strpos($src,"/tryphon.api/token/")!==false AND substr($src,-4)==".mp3")){
 		$src = substr($src,0,-4).".ogg";
 		return $src;
 	}
@@ -114,6 +114,11 @@ function tryphon_is_url_cast($url){
 	if ($url){
 		if (strpos($url,"/tryphon.api/token/?u=")!==false){
 			$url = parametre_url($url,"u");
+		}
+		elseif (strpos($url,"/tryphon.api/token/")!==false){
+			$url = explode("/",$url);
+			$url = end($url);
+			$url = urldecode($url);
 		}
 		if (preg_match(",https?://audiobank.tryphon.(?:org|eu)/casts/(.*)([.](mp3|ogg))?$,Uims",$url,$m)){
 			$cast = $m[1];
@@ -187,8 +192,8 @@ function tryphon_renseigner_cast($cast){
 	include_spip("inc/filtres");
 	if (!$res = recuperer_page($url_mp3,false,true,0)){
 		$infos['restreint'] = 1;
-		$url_mp3 = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_mp3),"http://dev_la-bas.nursit.com/");
-		$url_ogg = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url_ogg));
+		$url_mp3 = url_absolue(_DIR_RACINE."tryphon.api/token/".urlencode($url_mp3),"http://dev_la-bas.nursit.com/");
+		$url_ogg = url_absolue(_DIR_RACINE."tryphon.api/token/".urlencode($url_ogg));
 		$url_lowsec = tryphon_url_son_lowsec($url_mp3,250);
 		$res = recuperer_page($url_lowsec,false,true,0);
 	}
