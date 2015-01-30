@@ -24,8 +24,13 @@ function tryphon_can_play($url){
 	return true;
 }
 
-function tryphon_url_cast($cast){
-	return "http://audiobank.tryphon.eu/casts/$cast";
+function tryphon_url_cast($cast,$restreint=false){
+	$url = "http://audiobank.tryphon.eu/casts/$cast";
+	if ($restreint){
+		include_spip('inc/filtres');
+		$url = url_absolue(_DIR_RACINE."tryphon.api/token/?u=".urlencode($url));
+	}
+	return $url;
 }
 
 function tryphon_url_stream(){
@@ -187,3 +192,7 @@ function tryphon_renseigner_cast($cast){
 	return $infos;
 }
 
+function tryphon_afficher_complement_objet($flux){
+	$flux['data'] .= recuperer_fond("prive/squelettes/inclure/documents-databank",array('id_objet'=>$flux['args']['id'],'objet'=>$flux['args']['type']));
+	return $flux;
+}
