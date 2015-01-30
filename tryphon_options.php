@@ -24,6 +24,21 @@ function tryphon_can_play($url){
 	return true;
 }
 
+function tryphon_affiche_duree($duree){
+	if (!$duree) return "";
+	$h = $m = $s = "";
+	if ($duree>3600){
+		$h = intval(floor($duree)/3600);
+		$duree -= intval($h*3600);
+	}
+	if ($duree>60){
+		$m = intval(floor($duree)/60);
+		$duree -= intval($m*60);
+	}
+	$s = $duree;
+	return ($h?"$h:":"").str_pad($m,$h?2:1,"0",STR_PAD_LEFT).":".str_pad($s,2,"0",STR_PAD_LEFT);
+}
+
 function tryphon_url_cast($cast,$restreint=false){
 	$url = "http://audiobank.tryphon.eu/casts/$cast";
 	if ($restreint){
