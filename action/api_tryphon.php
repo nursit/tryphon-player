@@ -29,14 +29,17 @@ function action_api_tryphon_dist(){
 			if (count($arg)>2){
 				$id_auteur = $arg[1];
 				$cle = $arg[2];
+				$r = "";
 				include_spip('inc/acces');
-				// si pas de droit, on redirige vers l'url fournie par tryphon_test_acces
-				if (function_exists("tryphon_test_acces") AND $r=tryphon_test_acces($url,$id_auteur)){
-					$url = $r;
-				}
-				// sinon on verifie la cle lowsec avant de poser le jeton tryphon
-				elseif (verifier_low_sec($id_auteur,$cle,$url)){
+				if (
+					// on verifie la cle lowsec avant de poser le jeton tryphon
+					verifier_low_sec($id_auteur,$cle,$url)
+					// si pas de droit, tryphon_test_acces fournit une URL de redirection
+					AND (!function_exists("tryphon_test_acces") OR !$r=tryphon_test_acces($url,$id_auteur))){
 					$url = tryphon_url_api_key_token($url,$GLOBALS['ip']);
+				}
+				elseif($r) {
+					$url = $r;
 				}
 			}
 			$GLOBALS['redirect'] = $url;
