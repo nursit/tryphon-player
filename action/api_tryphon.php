@@ -18,16 +18,10 @@ function action_api_tryphon_dist(){
 
 	if (!$url = _request('u')){
 		$url = array_pop($arg);
-		$url = urldecode($url);
-		if (strpos($url,"/")===false AND strpos($url,"=.")!==false){
-			$url = explode(".",$url);
-			$url = reset($url);
-			$url = base64_decode($url);
-		}
-		elseif(strpos($url,"//")==false){
-			$url = array_pop($arg);
-			$url = base64_decode($url);
-		}
+		$url = array_pop($arg);
+		$url = base64_decode($url);
+		// on repasse l'url en absolu si besoin
+		$url = url_absolue($url,"http://audiobank.tryphon.org/");
 	}
 
 	switch($action){
@@ -36,8 +30,13 @@ function action_api_tryphon_dist(){
 				$id_auteur = $arg[1];
 				$cle = $arg[2];
 				include_spip('inc/acces');
-				if (verifier_low_sec($id_auteur,$cle,$url)){
-					$url = tryphon_tokenize_url($url);
+				// si pas de droit, on redirige vers l'url fournie par tryphon_test_acces
+				if (function_exists("tryphon_test_acces") AND $r=tryphon_test_acces($url,$id_auteur)){
+					$url = $r;
+				}
+				// sinon on verifie la cle lowsec avant de poser le jeton tryphon
+				elseif (verifier_low_sec($id_auteur,$cle,$url)){
+					$url = tryphon_url_api_key_token($url,$GLOBALS['ip']);
 				}
 			}
 			$GLOBALS['redirect'] = $url;
@@ -48,21 +47,8 @@ function action_api_tryphon_dist(){
 				$GLOBALS['redirect'] = $r;
 			}
 			else {
-				$GLOBALS['redirect'] = tryphon_tokenize_url($url);
+				$GLOBALS['redirect'] = tryphon_url_api_key_token($url,$GLOBALS['ip']);
 			}
 			break;
 	}
-}
-
-function tryphon_tokenize_url($url){
-	$key = (defined('_TRYPHON_API_KEY')?_TRYPHON_API_KEY:"a valid api key");
-	$ip_address = $GLOBALS['ip'];
-	if ($ip_address=="87.98.221.160")
-		$ip_address = "176.31.236.173";
-	$seconds = round(time()/300,0);
-	$data = $key . "-" . $ip_address . "-" . $seconds;
-	//var_dump($data);
-	//var_dump($token);
-	$token = hash("sha256",$data);
-	return parametre_url($url,"token",$token);
 }

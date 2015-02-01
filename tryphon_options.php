@@ -52,12 +52,28 @@ function tryphon_url_stream(){
 	return "http://beta-stream.tryphon.org/labas";
 }
 
+function tryphon_url_api_key_token($url,$ip_address){
+	$key = (defined('_TRYPHON_API_KEY')?_TRYPHON_API_KEY:"a valid api key");
+	if ($ip_address=="87.98.221.160")
+		$ip_address = "176.31.236.173";
+	$seconds = round(time()/300,0);
+	$data = $key . "-" . $ip_address . "-" . $seconds;
+	//var_dump($data);
+	//var_dump($token);
+	$token = hash("sha256",$data);
+	return parametre_url($url,"token",$token);
+}
 
 function tryphon_url_tokenize($url){
 	$joli = basename($url);
+	// on passe l'url en relatif si possible, pour la raccourcir
+	if (strncmp($url,"http://audiobank.tryphon.org/",29)==0){
+		$url = substr($url,29);
+	}
 	$url = url_absolue(_DIR_RACINE."tryphon.api/token/".base64_encode($url)."/$joli","http://dev_la-bas.nursit.com/");
 	return $url;
 }
+
 function tryphon_url_detokenize($url){
 	if (strpos($url,"/tryphon.api/token/?u=")!==false){
 		$url = parametre_url($url,"u");
@@ -65,12 +81,10 @@ function tryphon_url_detokenize($url){
 	elseif (strpos($url,"/tryphon.api/token/")!==false){
 		$parts = explode("/",$url);
 		$url = array_pop($parts);
-		$url = urldecode($url);
-		if (strpos($url,"//")===false){
-			if (substr($url,-1)!=="=")
-				$url = array_pop($parts);
-			$url = base64_decode($url);
-		}
+		$url = array_pop($parts);
+		$url = base64_decode($url);
+		// on repasse l'url en absolu si besoin
+		$url = url_absolue($url,"http://audiobank.tryphon.org/");
 	}
 	return $url;
 }
@@ -270,8 +284,8 @@ function tryphon_renseigner_cast($cast){
 		$infos[$cast]['restreint'] = 1;
 		$url_mp3 = tryphon_url_tokenize($url_mp3);
 		$url_ogg = tryphon_url_tokenize($url_ogg);
-		$url_lowsec = tryphon_url_son_lowsec($url_mp3,250);
-		$res = recuperer_page($url_lowsec,false,true,0);
+		$url_token = tryphon_url_api_key_token($url_mp3,_TRYPHON_API_IP_REQUEST);
+		$res = recuperer_page($url_token,false,true,0);
 	}
 	if ($res AND preg_match(",Content-Length:\s*(\d+)$,Uims",$res,$m))
 		$infos[$cast]['taille'] = $m[1];
