@@ -174,8 +174,8 @@ function tryphon_pre_edition($flux){
 	if ($flux['args']['table']=="spip_documents"
 	  AND $id_document=intval($flux['args']['id_objet'])
 	  AND $flux['args']['action']=='modifier'){
-		if (isset($flux['fichier']))
-			$source = $flux['fichier'];
+		if (isset($flux['data']['fichier']))
+			$source = $flux['data']['fichier'];
 		else {
 			$source = sql_getfetsel("fichier","spip_documents","id_document=".intval($id_document)." AND distant='oui'");
 		}
