@@ -67,8 +67,8 @@ function tryphon_url_api_key_token($url,$ip_address){
 function tryphon_url_tokenize($url){
 	$joli = basename($url);
 	// on passe l'url en relatif si possible, pour la raccourcir
-	if (strncmp($url,"http://audiobank.tryphon.eu/",29)==0){
-		$url = substr($url,29);
+	if (strncmp($url,"http://audiobank.tryphon.eu/",28)==0){
+		$url = substr($url,28);
 	}
 	$url = url_absolue(_DIR_RACINE."tryphon.api/token/".base64_encode($url)."/$joli",defined('_DEV_LABAS')?"http://dev_la-bas.nursit.com/":"");
 	return $url;
