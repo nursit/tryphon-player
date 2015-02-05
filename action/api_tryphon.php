@@ -21,7 +21,7 @@ function action_api_tryphon_dist(){
 		$url = array_pop($arg);
 		$url = base64_decode($url);
 		// on repasse l'url en absolu si besoin
-		$url = url_absolue($url,"http://audiobank.tryphon.org/");
+		$url = url_absolue($url,"http://audiobank.tryphon.eu/");
 	}
 
 	switch($action){

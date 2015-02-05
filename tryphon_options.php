@@ -40,7 +40,7 @@ function tryphon_affiche_duree($duree){
 }
 
 function tryphon_url_cast($cast,$restreint=false){
-	$url = "http://audiobank.tryphon.org/casts/$cast";
+	$url = "http://audiobank.tryphon.eu/casts/$cast";
 	if ($restreint){
 		include_spip('inc/filtres');
 		$url = tryphon_url_tokenize($url);
@@ -49,7 +49,7 @@ function tryphon_url_cast($cast,$restreint=false){
 }
 
 function tryphon_url_stream(){
-	return "http://beta-stream.tryphon.org/labas";
+	return "http://beta-stream.tryphon.eu/labas";
 }
 
 function tryphon_url_api_key_token($url,$ip_address){
@@ -67,7 +67,7 @@ function tryphon_url_api_key_token($url,$ip_address){
 function tryphon_url_tokenize($url){
 	$joli = basename($url);
 	// on passe l'url en relatif si possible, pour la raccourcir
-	if (strncmp($url,"http://audiobank.tryphon.org/",29)==0){
+	if (strncmp($url,"http://audiobank.tryphon.eu/",29)==0){
 		$url = substr($url,29);
 	}
 	$url = url_absolue(_DIR_RACINE."tryphon.api/token/".base64_encode($url)."/$joli",defined('_DEV_LABAS')?"http://dev_la-bas.nursit.com/":"");
@@ -84,7 +84,7 @@ function tryphon_url_detokenize($url){
 		$url = array_pop($parts);
 		$url = base64_decode($url);
 		// on repasse l'url en absolu si besoin
-		$url = url_absolue($url,"http://audiobank.tryphon.org/");
+		$url = url_absolue($url,"http://audiobank.tryphon.eu/");
 	}
 	return $url;
 }
@@ -249,7 +249,6 @@ function tryphon_post_edition($flux){
 function tryphon_renseigner_document_distant($flux) {
 	#var_dump($flux);
 
-	http://audiobank.tryphon.org/casts/bjwmsv7a.mp3
 	// on tente de récupérer les données oembed
 	if ($source = $flux['source']
 		AND $cast = tryphon_is_url_cast($source)){
@@ -271,8 +270,8 @@ function tryphon_renseigner_cast($cast){
 		return $infos[$cast];
 	}
 	$url = tryphon_url_cast($cast);
-	$url_mp3 = "http://audiobank.tryphon.org/casts/$cast.mp3";
-	$url_ogg= "http://audiobank.tryphon.org/casts/$cast.ogg";
+	$url_mp3 = "http://audiobank.tryphon.eu/casts/$cast.mp3";
+	$url_ogg= "http://audiobank.tryphon.eu/casts/$cast.ogg";
 
 	$infos[$cast] = array(
 		'restreint' => 0,
