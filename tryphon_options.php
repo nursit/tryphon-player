@@ -70,7 +70,7 @@ function tryphon_url_tokenize($url){
 	if (strncmp($url,"http://audiobank.tryphon.org/",29)==0){
 		$url = substr($url,29);
 	}
-	$url = url_absolue(_DIR_RACINE."tryphon.api/token/".base64_encode($url)."/$joli","http://dev_la-bas.nursit.com/");
+	$url = url_absolue(_DIR_RACINE."tryphon.api/token/".base64_encode($url)."/$joli",defined('_DEV_LABAS')?"http://dev_la-bas.nursit.com/":"");
 	return $url;
 }
 
@@ -95,7 +95,9 @@ function tryphon_url_son_lowsec($url,$id_auteur){
 		$url_son = tryphon_url_detokenize($url);
 		$low_sec = afficher_low_sec($id_auteur,$url_son);
 		$url = str_replace("/tryphon.api/token/","/tryphon.api/lowtoken/$id_auteur/$low_sec/",$url);
-		$url = str_replace("/la-bas.org/","/dev_la-bas.nursit.com/",$url);
+		if (defined('_DEV_LABAS')){
+			$url = str_replace("/la-bas.org/","/dev_la-bas.nursit.com/",$url);
+		}
 	}
 	return $url;
 }
