@@ -278,31 +278,32 @@ function tryphon_renseigner_cast($cast){
 		'distant' => 'oui',
 		'media' => 'audio',
 		'mode' => 'document',
+		'fichier' => $url_mp3,
+		'extension' => 'mp3',
 	);
 	include_spip("inc/distant");
 	include_spip("inc/filtres");
-	if (!$res = recuperer_page($url_mp3,false,true,0)){
-		$infos[$cast]['restreint'] = 1;
-		$url_mp3 = tryphon_url_tokenize($url_mp3);
-		$url_ogg = tryphon_url_tokenize($url_ogg);
-		$url_token = tryphon_url_api_key_token($url_mp3,_TRYPHON_API_IP_REQUEST);
-		$res = recuperer_page($url_token,false,true,0);
-	}
-	if ($res AND preg_match(",Content-Length:\s*(\d+)$,Uims",$res,$m))
-		$infos[$cast]['taille'] = $m[1];
-	$infos[$cast]['fichier'] = $url_mp3;
-	$infos[$cast]['extension'] = 'mp3';
 
 	// recuperer les infos
 	if ($json = recuperer_page("$url.json")
 	  AND $json = json_decode($json,true)){
-		#var_dump($json);
+		if (isset($json['protected']) AND $json['protected']){
+			$infos[$cast]['restreint'] = 1;
+			$url_mp3 = tryphon_url_tokenize($url_mp3);
+			$url_ogg = tryphon_url_tokenize($url_ogg);
+			$infos[$cast]['fichier'] = $url_mp3;
+		}
+
 		if (isset($json['title']))
 			$infos[$cast]['titre'] = $json['title'];
 		if (isset($json['author']))
 			$infos[$cast]['credits'] = $json['author'];
 		if (isset($json['duration']))
 			$infos[$cast]['duree'] = $json['duration'];
+		if (isset($json['formats']['mp3']['size']))
+			$infos[$cast]['taille'] = $json['formats']['mp3']['size'];
+		#var_dump($json);
+		#var_dump($infos[$cast]);
 	}
 
 	return $infos[$cast];
