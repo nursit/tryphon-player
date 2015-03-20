@@ -132,7 +132,10 @@ function tryphon_affichage_final($flux){
 	  AND strpos($flux,"tryphon.eu")!==false
 		AND strpos($flux,"Tryphon.Player.setup")===false) {
 
-		$js = timestamp(produire_fond_statique("javascript/tryphon-player.js"));
+		$js = produire_fond_statique("javascript/tryphon-player.js");
+		if ($m = filemtime($js)){
+			$js .= "?$m";
+		}
 		lire_fichier(find_in_path("javascript/tryphon-player-init.js"),$js_init);
 		$ins = "\n<script type=\"application/javascript\">var tryphon_player_script='$js';\n$js_init</script>";
 		if ($p = stripos($flux,"</body>")){
