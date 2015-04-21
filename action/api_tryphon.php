@@ -37,8 +37,9 @@ function action_api_tryphon_dist(){
 					// si pas de droit, tryphon_test_acces fournit une URL de redirection
 					AND (!function_exists("tryphon_test_acces") OR !$r=tryphon_test_acces($url,$id_auteur))){
 					$url = tryphon_url_api_key_token($url,$GLOBALS['ip']);
-					// noter que cet abonne est actif
+					$url = parametre_url($url,"utm_medium","podcast");
 
+					// noter que cet abonne est actif
 					// Indiquer la connexion. A la journee pres ca suffit.
 					$row = sql_fetsel("*","spip_auteurs","id_auteur=".intval($id_auteur));
 					$connect_quand = strtotime($row['en_ligne']);
