@@ -172,6 +172,7 @@ function tryphon_is_url_cast($url){
 
 /**
  * Mettre a jour un document cast Tryphon lors de l'enregistrement
+ * Ne pas modifier lowsec quand on change le mot de passe
  * @param array $flux
  * @return array mixed
  */
@@ -189,6 +190,17 @@ function tryphon_pre_edition($flux){
 			$infos = tryphon_renseigner_cast($cast);
 			$flux['data'] = array_merge($flux['data'],$infos);
 		}
+	}
+
+	if ($flux['args']['table']=="spip_auteurs"
+	  AND $id_auteur=intval($flux['args']['id_objet'])
+	  AND $flux['args']['action']=='modifier'){
+
+		if (isset($flux['data']['low_sec'])
+		  AND !strlen($flux['data']['low_sec'])) {
+			unset($flux['data']['low_sec']);
+		}
+
 	}
 
 	return $flux;
