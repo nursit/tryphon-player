@@ -1,10 +1,10 @@
 <?php
 /**
- * Fichier gérant les options du plugin Tryphon
+ * Fichier gï¿½rant les options du plugin Tryphon
  *
  * @plugin     Tryphon
  * @copyright  2014
- * @author     Cédric
+ * @author     Cï¿½dric
  * @licence    GNU/GPL
  * @package    SPIP\Tryphon\Pipelines
  */
@@ -71,6 +71,8 @@ function tryphon_url_tokenize($url){
 		$url = substr($url,28);
 	}
 	$url = url_absolue(_DIR_RACINE."tryphon.api/token/".base64_encode($url)."/$joli",defined('_DEV_LABAS')?"http://dev_la-bas.nursit.com/":"");
+	// toujours en http
+	$url = "http:".protocole_implicite($url);
 	return $url;
 }
 
@@ -264,7 +266,7 @@ function tryphon_post_edition($flux){
 function tryphon_renseigner_document_distant($flux) {
 	#var_dump($flux);
 
-	// on tente de récupérer les données oembed
+	// on tente de rï¿½cupï¿½rer les donnï¿½es oembed
 	if ($source = $flux['source']
 		AND $cast = tryphon_is_url_cast($source)){
 		$doc = tryphon_renseigner_cast($cast);

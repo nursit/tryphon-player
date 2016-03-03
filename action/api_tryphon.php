@@ -1,10 +1,10 @@
 <?php
 /**
- * Fichier gérant l'api du player Tryphon
+ * Fichier gï¿½rant l'api du player Tryphon
  *
  * @plugin     Tryphon
  * @copyright  2014
- * @author     Cédric
+ * @author     Cï¿½dric
  * @licence    GNU/GPL
  * @package    SPIP\Tryphon\action
  */
