@@ -56,7 +56,7 @@ function tryphon_url_api_key_token($url,$ip_address){
 	$key = (defined('_TRYPHON_API_KEY')?_TRYPHON_API_KEY:"a valid api key");
 	if ($ip_address=="87.98.221.160")
 		$ip_address = "176.31.236.173";
-	$seconds = round(time()/300,0);
+	$seconds = round(time()/43200,0);
 	$data = $key . "-" . $ip_address . "-" . $seconds;
 	//var_dump($data);
 	//var_dump($token);
